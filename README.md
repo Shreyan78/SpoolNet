@@ -1,7 +1,6 @@
 # SpoolNet
 Automated Filament Tracking combining basic sensors, pcbs, and webhook functionaility alongside a web UI to facilitate easy FDM material management
 
-
 # READ ME
 Still a WIP page!
 
@@ -16,9 +15,12 @@ Still a WIP page!
 - Mobile App
 
 ## Hardware
-ESP32-S2 Mini: Mainboard for Hub and Location Unit
-PN532: Powers NFC based identification
 
+- ESP32-S2 Mini: Mainboard for Hub and Location Unit
+- PN532: Powers NFC based identification
+- 0.96 OLED IIC Diplay Module: Troubleshooting and verification on Hubs
+- MT6701 Magnetic Encoder: Used with Bondtech BMG gears to track directional filament movement accuratly
+- NTAG214 NFC Stickers: Placed on Filament rolls, can be read by PN532
 
 ## How It Works
 
