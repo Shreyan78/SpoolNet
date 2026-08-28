@@ -1,8 +1,8 @@
-# SpoolNet
-Automated Filament Tracking combining basic sensors, pcbs, and webhook functionaility alongside a web UI to facilitate easy FDM material management
-
 # READ ME
 Still a WIP page!
+
+# SpoolNet
+Automated Filament Tracking combining basic sensors, pcbs, and webhook functionaility alongside a web UI to facilitate easy FDM material management
 
 ## See the system in action!
 [![Watch the demo](https://img.youtube.com/vi/H7J6-Q6CeBQ/maxresdefault.jpg)](https://youtu.be/H7J6-Q6CeBQ)
