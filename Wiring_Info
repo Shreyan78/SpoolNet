@@ -1,158 +1,95 @@
-Absolutely — here's a concise README-ready version.
+# SpoolNet Tracking Hub — Electrical Hardware & Wiring
 
-# SpoolNet Electrical Hardware & Wiring
+## Components
 
-SpoolNet consists of two ESP32-S3-based devices:
+* **ESP32-S3FH4R2** — main MCU + Wi-Fi
+* **MT6701** — magnetic rotary encoder for filament measurement
+* **PN532** — NFC reader for spool identification
+* **SSD1306 128×64** — OLED display
+* **BMG gear + magnet** — measures filament movement through the MT6701
+* **Status LED + resistor**
+* **USB-C power input**
 
-* **Tracking Hub** — measures filament usage and identifies the active spool.
-* **Location Unit** — identifies spool locations and provides RGB status feedback.
+## Pinout
 
-Both devices communicate with the SpoolNet server over Wi-Fi.
+### I²C — OLED + MT6701
 
-## Tracking Hub
-
-### Components
-
-* ESP32-S3FH4R2
-* MT6701 magnetic encoder
-* PN532 NFC reader
-* SSD1306 128×64 OLED
-* Filament drive wheel/gear + magnet
-* Status LED
-* 3.3 V power regulation
-* USB-C power input
-* Decoupling capacitors and required resistors
-
-### Pinout
-
-#### I²C — OLED + MT6701
-
-| Signal | ESP32-S3 |
-| ------ | -------: |
-| SCL    |   GPIO 2 |
-| SDA    |   GPIO 6 |
-| VCC    |    3.3 V |
-| GND    |      GND |
+| Signal |   ESP32-S3 |
+| ------ | ---------: |
+| SCL    | **GPIO 2** |
+| SDA    | **GPIO 6** |
+| VCC    |  **3.3 V** |
+| GND    |    **GND** |
 
 The OLED and MT6701 share the same I²C bus.
 
-#### SPI — PN532
+### SPI — PN532
 
-| PN532 | ESP32-S3 |
-| ----- | -------: |
-| SCK   |   GPIO 8 |
-| MISO  |  GPIO 12 |
-| MOSI  |   GPIO 7 |
-| SS    |  GPIO 11 |
-| VCC   |    3.3 V |
-| GND   |      GND |
+| PN532 |    ESP32-S3 |
+| ----- | ----------: |
+| SCK   |  **GPIO 8** |
+| MISO  | **GPIO 12** |
+| MOSI  |  **GPIO 7** |
+| SS    | **GPIO 11** |
+| VCC   |   **3.3 V** |
+| GND   |     **GND** |
 
-The PN532 is configured for SPI communication.
+### Status LED
 
+| Component |   ESP32-S3 |
+| --------- | ---------: |
+| LED       | **GPIO 4** |
 
----
+```text
+GPIO 4 ── resistor ── LED ── GND
+```
 
-## Location Unit
-
-### Components
-
-* ESP32-S3FH4R2
-* PN532 NFC reader
-* RGB LED
-* 3× current-limiting resistors
-* 3.3 V power regulation
-* USB-C power input
-* Decoupling capacitors
-
-### PN532 SPI Pinout
-
-| PN532 | ESP32-S3 |
-| ----- | -------: |
-| SCK   |  GPIO 11 |
-| MISO  |  GPIO 12 |
-| MOSI  |   GPIO 6 |
-| SS    |  GPIO 13 |
-| VCC   |    3.3 V |
-| GND   |      GND |
-
-### RGB LED
-
-| LED Channel | ESP32-S3 |
-| ----------- | -------: |
-| Red         |   GPIO 1 |
-| Green       |   GPIO 5 |
-| Blue        |   GPIO 2 |
-
-Each RGB channel requires its own current-limiting resistor.
-
----
+GPIO 4 is dedicated to the status LED; GPIO 2 remains dedicated to I²C SCL.
 
 ## Power
 
-The primary power architecture is:
+The current prototype is powered directly through USB:
 
 ```text
-USB-C / 5 V
-     │
-     ▼
-Power Protection / Regulation
-     │
-     ▼
-   3.3 V
-     │
-     ├── ESP32-S3
-     ├── PN532
-     ├── MT6701
-     └── SSD1306
+USB-C 5 V
+   │
+   ├── ESP32-S3
+   │
+   └── 3.3 V peripherals
+       ├── PN532
+       ├── MT6701
+       └── SSD1306
 ```
 
-All primary logic peripherals operate at **3.3 V**.
-
----
-
-## System Architecture
+## System
 
 ```text
                     ┌─────────────────────┐
                     │   SPOOLNET HUB      │
                     │                     │
-Filament ──────────►│ MT6701 Encoder      │
-                    │        │            │
-                    │        ▼            │
-                    │    ESP32-S3         │
-                    │     │       │       │
-                    │     │       └─ SPI ─ PN532
-                    │     └─ I²C ─ OLED   │
-                    └─────────┬───────────┘
-                              │
-                            Wi-Fi
-                              │
-                              ▼
-                    ┌──────────────────┐
-                    │ SpoolNet Server  │
-                    │ Raspberry Pi/PC  │
-                    │                  │
-                    │ SQLite + Web UI  │
-                    └──────────────────┘
-
-
-                    ┌─────────────────────┐
-                    │  LOCATION UNIT      │
-                    │                     │
-                    │    ESP32-S3         │
-                    │     │       │       │
-                    │     │       └─ RGB LED
-                    │     └─ SPI ─ PN532   │
-                    └─────────┬───────────┘
-                              │
-                            Wi-Fi
-                              │
-                              ▼
-                        SpoolNet Server
+Filament ──────────►│ BMG Gear            │
+                    │      │              │
+                    │    MT6701           │
+                    │      │ I²C          │
+                    │      ▼              │
+                    │   ESP32-S3          │
+                    │    │  │  │          │
+                    │    │  │  └─ SPI ─ PN532
+                    │    │  └──── I²C ─ OLED
+                    │    └─────── GPIO 4 ─ LED
+                    └──────────┬──────────┘
+                               │
+                             Wi-Fi
+                               │
+                               ▼
+                         SpoolNet Server
 ```
 
 ### Communication
 
-* **ESP32 ↔ peripherals:** I²C / SPI / GPIO
+* **ESP32 ↔ MT6701/OLED:** I²C
+* **ESP32 ↔ PN532:** SPI
 * **ESP32 ↔ Server:** Wi-Fi + HTTP webhook
-* **Server:** SQLite database + SpoolNet Web UI
+* **Server:** SQLite + SpoolNet Web UI
+
+
