@@ -93,3 +93,7 @@ Filament ──────────►│ BMG Gear            │
 * **Server:** SQLite + SpoolNet Web UI
 
 
+### WORKFLOW SHOWCASE VIDEOS
+https://drive.google.com/file/d/1gc4ztrvC6Td8ThSk-mZWT4igBCVe-E5V/view?usp=drive_link
+https://drive.google.com/file/d/1seP19Iz1PAwKhdj3NSk08q5-k3SGKtdA/view?usp=drive_link
+
